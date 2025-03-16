@@ -1,6 +1,14 @@
-# Grain 📸
+# Grain
 
-Film stock recommendations based on your local weather conditions. Get personalized suggestions for which film to shoot based on the current weather and lighting conditions in your area.
+Film stock recommendations based on your local weather conditions.
+
+Visit the live site: [Grain](https://aridutilh.github.io/grain/)
+
+## Features
+- Real-time weather data
+- Film stock recommendations based on lighting conditions
+- Filter by format (35mm/120) and type (color/B&W)
+- Beautiful weather-based backgrounds
 
 ## ✨ Features
 
