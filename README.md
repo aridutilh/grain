@@ -1,16 +1,16 @@
-# Grain
+# Grain 📸
 
 Film stock recommendations based on your local weather conditions. Get personalized suggestions for which film to shoot based on the current weather and lighting conditions in your area.
 
-## Features
+## ✨ Features
 
-- Real-time weather data integration
-- Film stock recommendations based on lighting conditions
-- Filter by format (35mm/120) and type (color/B&W)
-- Beautiful weather-based background images
-- Mobile-responsive design
+- 🌤️ Real-time weather data integration
+- 🎞️ Film stock recommendations based on lighting conditions
+- 📏 Filter by format (35mm/120) and type (color/B&W)
+- 🖼️ Beautiful weather-based background images
+- 📱 Mobile-responsive design
 
-## Setup
+## 🚀 Setup
 
 1. Clone the repository:
 ```sh
@@ -36,20 +36,20 @@ npm install
 npm run dev
 ```
 
-## Technologies
+## 🛠️ Technologies
 
-- Vite
-- React
-- TypeScript
-- Tailwind CSS
-- shadcn/ui
-- Framer Motion
-- OpenWeather API
+- ⚡️ Vite
+- ⚛️ React
+- 📝 TypeScript
+- 🎨 Tailwind CSS
+- 🎯 shadcn/ui
+- ✨ Framer Motion
+- 🌤️ OpenWeather API
 
-## Contributing
+## 🤝 Contributing
 
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
 
-## License
+## 📄 License
 
 [MIT](https://choosealicense.com/licenses/mit/)
