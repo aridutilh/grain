@@ -1,69 +1,55 @@
-# Welcome to your Lovable project
+# Grain
 
-## Project info
+Film stock recommendations based on your local weather conditions. Get personalized suggestions for which film to shoot based on the current weather and lighting conditions in your area.
 
-**URL**: https://lovable.dev/projects/09435594-5bf5-400e-9bb4-29d0989ad4df
+## Features
 
-## How can I edit this code?
+- Real-time weather data integration
+- Film stock recommendations based on lighting conditions
+- Filter by format (35mm/120) and type (color/B&W)
+- Beautiful weather-based background images
+- Mobile-responsive design
 
-There are several ways of editing your application.
+## Setup
 
-**Use Lovable**
-
-Simply visit the [Lovable Project](https://lovable.dev/projects/09435594-5bf5-400e-9bb4-29d0989ad4df) and start prompting.
-
-Changes made via Lovable will be committed automatically to this repo.
-
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
-
+1. Clone the repository:
 ```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+git clone https://github.com/aridutilh/grain.git
+cd grain
+```
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+2. Install dependencies:
+```sh
+npm install
+```
 
-# Step 3: Install the necessary dependencies.
-npm i
+3. Set up environment variables:
+   - Copy `.env.example` to `.env`:
+     ```sh
+     cp .env.example .env
+     ```
+   - Get an API key from [OpenWeather](https://openweathermap.org/api)
+   - Add your API key to the `.env` file
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
+4. Start the development server:
+```sh
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
-
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
-
-**Use GitHub Codespaces**
-
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
-
-## What technologies are used for this project?
-
-This project is built with .
+## Technologies
 
 - Vite
-- TypeScript
 - React
-- shadcn-ui
+- TypeScript
 - Tailwind CSS
+- shadcn/ui
+- Framer Motion
+- OpenWeather API
 
-## How can I deploy this project?
+## Contributing
 
-Simply open [Lovable](https://lovable.dev/projects/09435594-5bf5-400e-9bb4-29d0989ad4df) and click on Share -> Publish.
+Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
 
-## I want to use a custom domain - is that possible?
+## License
 
-We don't support custom domains (yet). If you want to deploy your project under your own domain then we recommend using Netlify. Visit our docs for more details: [Custom domains](https://docs.lovable.dev/tips-tricks/custom-domain/)
+[MIT](https://choosealicense.com/licenses/mit/)
