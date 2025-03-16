@@ -122,6 +122,7 @@ const Index = () => {
                       className="text-white/90 hover:bg-black/40 hover:text-white/90 border border-white/20 data-[state=on]:bg-white/20 data-[state=on]:text-white transition-colors"
                     >
                       120
+                      
                     </Toggle>
                     <Toggle
                       pressed={activeFilters.includes('color')}
