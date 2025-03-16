@@ -1,89 +1,112 @@
-
 import { useEffect, useState } from 'react';
-import { Card, CardContent } from '@/components/ui/card';
 import { WeatherData } from '@/utils/weatherService';
-import { CloudSun, CloudRain, Sun, CloudSnow, Loader2, MapPin } from 'lucide-react';
+import { CloudSun, CloudRain, Sun, CloudSnow, Loader2, MapPin, Clock, ArrowLeft } from 'lucide-react';
+import { useTemperature } from '@/utils/temperatureContext';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 interface WeatherDisplayProps {
-  weatherData: WeatherData | null;
-  isLoading: boolean;
-  error: string | null;
+  weather: WeatherData;
+  onBack: () => void;
+  isLoading?: boolean;
+  error?: string | null;
 }
 
-const WeatherDisplay = ({ weatherData, isLoading, error }: WeatherDisplayProps) => {
-  const [icon, setIcon] = useState<JSX.Element>(<CloudSun className="h-12 w-12 text-blue-500" />);
+const WeatherDisplay = ({ weather, onBack, isLoading, error }: WeatherDisplayProps) => {
+  const { getDefaultUnit, convertTemperature } = useTemperature();
+  const [icon, setIcon] = useState<JSX.Element>(<CloudSun className="h-5 w-5 text-white/70" />);
   
   useEffect(() => {
-    if (weatherData) {
-      const condition = weatherData.conditions.toLowerCase();
+    if (weather) {
+      const condition = weather.conditions.toLowerCase();
       
       if (condition.includes('clear') || condition.includes('sun')) {
-        setIcon(<Sun className="h-12 w-12 text-amber-500" />);
+        setIcon(<Sun className="h-5 w-5 text-amber-400" />);
       } else if (condition.includes('rain') || condition.includes('drizzle')) {
-        setIcon(<CloudRain className="h-12 w-12 text-blue-500" />);
+        setIcon(<CloudRain className="h-5 w-5 text-blue-400" />);
       } else if (condition.includes('snow')) {
-        setIcon(<CloudSnow className="h-12 w-12 text-blue-200" />);
+        setIcon(<CloudSnow className="h-5 w-5 text-blue-200" />);
       } else {
-        setIcon(<CloudSun className="h-12 w-12 text-blue-400" />);
+        setIcon(<CloudSun className="h-5 w-5 text-white/70" />);
       }
     }
-  }, [weatherData]);
+  }, [weather]);
   
   if (isLoading) {
     return (
-      <Card className="w-full max-w-md mx-auto mb-6 bg-white/90 backdrop-blur">
-        <CardContent className="flex flex-col items-center justify-center p-6">
-          <Loader2 className="h-12 w-12 text-blue-500 animate-spin" />
-          <p className="mt-4 text-lg text-gray-600">Fetching weather data...</p>
-        </CardContent>
-      </Card>
+      <div className="flex items-center gap-2 text-white/70">
+        <Loader2 className="h-5 w-5 animate-spin" />
+        <span>Fetching weather data...</span>
+      </div>
     );
   }
   
   if (error) {
     return (
-      <Card className="w-full max-w-md mx-auto mb-6 bg-white/90 backdrop-blur">
-        <CardContent className="p-6">
-          <div className="text-center">
-            <CloudSun className="h-12 w-12 text-gray-400 mx-auto mb-2" />
-            <h3 className="text-lg font-medium text-gray-900">Weather Unavailable</h3>
-            <p className="text-gray-600 mt-1">{error}</p>
-          </div>
-        </CardContent>
-      </Card>
+      <div className="text-red-400 flex items-center gap-2">
+        <CloudSun className="h-5 w-5" />
+        <span>{error}</span>
+      </div>
     );
   }
   
-  if (!weatherData) {
+  if (!weather) {
     return null;
   }
-  
+
+  const defaultUnit = getDefaultUnit(weather.country);
+  const temperature = defaultUnit === 'C' ? weather.temperature : Math.round((weather.temperature * 9/5) + 32);
+  const alternativeTemp = defaultUnit === 'C' ? Math.round((weather.temperature * 9/5) + 32) : weather.temperature;
+  const localTimeString = weather.localTime.toLocaleTimeString('en-US', {
+    hour: 'numeric',
+    minute: '2-digit',
+    hour12: true
+  });
+
   return (
-    <Card className="w-full max-w-md mx-auto mb-6 bg-white/90 backdrop-blur shadow-lg border-0 overflow-hidden">
-      <CardContent className="p-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <div className="flex items-center mb-1">
-              <MapPin className="h-4 w-4 text-gray-500 mr-1" />
-              <p className="text-sm text-gray-600">{weatherData.location}</p>
-            </div>
-            <h2 className="text-3xl font-bold text-gray-900">{weatherData.temperature}°C</h2>
-            <p className="text-gray-600 capitalize">{weatherData.conditions}</p>
-          </div>
-          <div className="flex-shrink-0">{icon}</div>
+    <div className="flex items-center gap-4 bg-black/40 backdrop-blur-sm px-4 py-2 rounded-lg">
+      <div className="flex items-center gap-2">
+        <button
+          onClick={onBack}
+          className="group flex items-center gap-1 text-white/70 hover:text-white transition-all duration-200"
+          aria-label="Return to home"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          <span className="overflow-hidden w-0 group-hover:w-20 transition-all duration-200 whitespace-nowrap opacity-0 group-hover:opacity-100">
+            Back home
+          </span>
+        </button>
+        <div className="flex items-center gap-2">
+          <MapPin className="h-4 w-4 text-white/70" />
+          <span className="text-white font-medium">{weather.location}</span>
         </div>
-        
-        <div className="mt-4 pt-4 border-t border-gray-100">
-          <p className="text-sm text-gray-600">
-            <span className="font-medium">Light conditions:</span>{' '}
-            {weatherData.sunlight === 'bright' && 'Bright sunlight'}
-            {weatherData.sunlight === 'medium' && 'Moderate light'}
-            {weatherData.sunlight === 'low' && 'Overcast/Low light'}
-            {weatherData.sunlight === 'night' && 'Night/Very low light'}
-          </p>
-        </div>
-      </CardContent>
-    </Card>
+      </div>
+
+      <div className="flex items-center gap-3">
+        {icon}
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <span className="text-white cursor-help">
+                {temperature}°{defaultUnit}
+              </span>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>{alternativeTemp}°{defaultUnit === 'C' ? 'F' : 'C'}</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      </div>
+
+      <div className="flex items-center gap-2 text-white/70">
+        <Clock className="h-4 w-4" />
+        <span className="text-sm">{localTimeString}</span>
+      </div>
+    </div>
   );
 };
 
