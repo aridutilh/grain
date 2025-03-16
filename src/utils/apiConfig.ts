@@ -6,11 +6,11 @@ console.log('Environment variables:', {
 });
 
 if (!API_KEY) {
-  console.error('OpenWeather API key is missing. Please add it to your .env file.');
+  throw new Error('OpenWeather API key is missing. Please add VITE_OPENWEATHER_API_KEY to your environment variables.');
 }
 
 export const OPENWEATHER_CONFIG = {
-  apiKey: API_KEY || 'your_api_key_here', // Temporary fallback for debugging
+  apiKey: API_KEY,
   baseUrl: 'https://api.openweathermap.org',
   endpoints: {
     geocoding: '/geo/1.0/direct',
