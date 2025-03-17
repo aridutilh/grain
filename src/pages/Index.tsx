@@ -33,16 +33,22 @@ const Index = () => {
     
     try {
       const cities = await searchCities(location);
-      const cityMatch = cities.find(city => 
-        `${city.name}${city.state ? `, ${city.state}` : ''}, ${city.country}` === location
-      );
-
-      const weather = await fetchWeatherByLocation(
-        cityMatch ? { lat: cityMatch.lat, lon: cityMatch.lon } : location
-      );
       
-      setWeatherData(weather);
-      updateRecommendations(weather, activeFilters);
+      // If we have cities, use the first match instead of requiring exact match
+      if (cities && cities.length > 0) {
+        const weather = await fetchWeatherByLocation({
+          lat: cities[0].lat,
+          lon: cities[0].lon
+        });
+        
+        setWeatherData(weather);
+        updateRecommendations(weather, activeFilters);
+      } else {
+        // If no cities found, try direct location search as fallback
+        const weather = await fetchWeatherByLocation(location);
+        setWeatherData(weather);
+        updateRecommendations(weather, activeFilters);
+      }
     } catch (err) {
       console.error(err);
       setError("Could not find weather data for this location. Please try another city name.");
