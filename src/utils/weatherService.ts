@@ -10,6 +10,8 @@ export interface WeatherData {
   country: string;
   localTime: Date;
   isDaytime: boolean;
+  lat: number;
+  lon: number;
 }
 
 interface Coordinates {
@@ -83,7 +85,9 @@ export const fetchWeatherByLocation = async (location: string | Coordinates): Pr
       location: data.name,
       country: data.sys.country,
       localTime,
-      isDaytime: sunlight !== 'night'
+      isDaytime: sunlight !== 'night',
+      lat: data.coord.lat,
+      lon: data.coord.lon
     };
 
     console.log('Raw weather data from API:', data);
