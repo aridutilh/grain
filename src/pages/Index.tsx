@@ -38,115 +38,67 @@ const Index = () => {
   const [stores, setStores] = useState<FilmStore[]>([]);
   const [isStoresLoading, setIsStoresLoading] = useState(false);
 
-  useEffect(() => {
-    // Load Google Maps script
-    if (!window.google) {
-      const script = document.createElement('script');
-      script.src = `https://maps.googleapis.com/maps/api/js?key=${import.meta.env.VITE_GOOGLE_MAPS_API_KEY}&libraries=places`;
-      script.async = true;
-      script.defer = true;
-      document.head.appendChild(script);
-    }
-  }, []);
-
   const searchNearbyStores = async (lat: number, lng: number) => {
     try {
-      console.log('Starting store search for lat:', lat, 'lng:', lng);
-      
-      // Wait for Google Maps to load
-      if (!window.google) {
-        console.log('Waiting for Google Maps to load...');
-        await new Promise<void>((resolve, reject) => {
-          const timeout = setTimeout(() => {
-            reject(new Error('Google Maps failed to load'));
-          }, 10000); // 10 second timeout
+      const query = `
+        [out:json][timeout:25];
+        (
+          node["shop"~"camera|photo|film"](around:5000,${lat},${lng});
+          way["shop"~"camera|photo|film"](around:5000,${lat},${lng});
+          relation["shop"~"camera|photo|film"](around:5000,${lat},${lng});
+          node["amenity"="shop"]["shop"~"camera|photo|film"](around:5000,${lat},${lng});
+          way["amenity"="shop"]["shop"~"camera|photo|film"](around:5000,${lat},${lng});
+          relation["amenity"="shop"]["shop"~"camera|photo|film"](around:5000,${lat},${lng});
+        );
+        out body;
+        >;
+        out skel qt;
+      `;
 
-          const checkGoogle = () => {
-            if (window.google) {
-              clearTimeout(timeout);
-              console.log('Google Maps loaded successfully');
-              resolve();
-            } else {
-              setTimeout(checkGoogle, 100);
-            }
-          };
-          checkGoogle();
-        });
+      const response = await fetch('https://overpass-api.de/api/interpreter', {
+        method: 'POST',
+        body: query,
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
 
-      // Create a temporary div for the PlacesService
-      const tempDiv = document.createElement('div');
-      document.body.appendChild(tempDiv);
-      
-      const service = new google.maps.places.PlacesService(tempDiv);
-      
-      const request = {
-        location: new google.maps.LatLng(lat, lng),
-        radius: 10000, // 10km radius
-        type: 'store',
-        keyword: 'camera film photography'
-      };
+      const data = await response.json();
 
-      console.log('Making Places API request:', request);
+      if (data.elements && data.elements.length > 0) {
+        const filmStores: FilmStore[] = data.elements
+          .filter((element: any) => 
+            element.tags && 
+            element.tags.name && 
+            (element.tags['addr:street'] || element.tags['addr:full'])
+          )
+          .map((element: any) => ({
+            id: element.id.toString(),
+            name: element.tags.name,
+            address: element.tags['addr:street'] 
+              ? `${element.tags['addr:street']}${element.tags['addr:housenumber'] ? ` ${element.tags['addr:housenumber']}` : ''}`
+              : element.tags['addr:full'],
+            distance: element.distance || 0,
+            rating: parseFloat(element.tags['rating'] || '0'),
+            userRatingsTotal: parseInt(element.tags['user_ratings_total'] || '0'),
+            lat: element.lat || element.center?.lat || 0,
+            lng: element.lon || element.center?.lon || 0,
+          }))
+          .sort((a: FilmStore, b: FilmStore) => {
+            // Sort by rating first (if available), then by distance
+            if (a.rating && b.rating) {
+              return b.rating - a.rating;
+            }
+            return a.distance - b.distance;
+          })
+          .slice(0, 4); // Only show top 4 stores
 
-      service.nearbySearch(request, (results, status) => {
-        // Clean up the temporary div
-        document.body.removeChild(tempDiv);
-
-        console.log('Places API response status:', status);
-        console.log('Number of results:', results?.length || 0);
-
-        if (status === google.maps.places.PlacesServiceStatus.OK && results) {
-          // Filter for camera/film stores and sort by rating
-          const filmStores: FilmStore[] = results
-            .filter((place: any) => {
-              const name = place.name.toLowerCase();
-              const types = place.types || [];
-              const isFilmStore = (
-                name.includes('camera') || 
-                name.includes('film') || 
-                name.includes('photo') ||
-                name.includes('lomography') ||
-                types.includes('camera_store') ||
-                types.includes('photography_store')
-              );
-              console.log('Store:', name, 'Types:', types, 'Is film store:', isFilmStore);
-              return isFilmStore;
-            })
-            .map((place: any) => ({
-              id: place.place_id,
-              name: place.name,
-              address: place.vicinity,
-              distance: google.maps.geometry.spherical.computeDistanceBetween(
-                new google.maps.LatLng(lat, lng),
-                place.geometry.location
-              ) / 1000, // Convert to kilometers
-              rating: place.rating || 0,
-              userRatingsTotal: place.user_ratings_total || 0,
-              lat: place.geometry.location.lat(),
-              lng: place.geometry.location.lng()
-            }))
-            .sort((a: FilmStore, b: FilmStore) => {
-              // Sort by rating first, then by number of ratings
-              if (a.rating !== b.rating) {
-                return b.rating - a.rating;
-              }
-              return b.userRatingsTotal - a.userRatingsTotal;
-            })
-            .slice(0, 4); // Only show top 4 stores
-
-          console.log('Found film stores:', filmStores.length);
-          if (filmStores.length > 0) {
-            setStores(filmStores);
-          } else {
-            console.log('No film stores found in the area');
-            setStores([]);
-          }
-        } else {
-          console.log('Places API error:', status);
-          setStores([]);
-        }
-      });
+        setStores(filmStores);
+      } else {
+        console.log('No stores found in the area');
+        setStores([]);
+      }
     } catch (error) {
       console.error('Error searching for film stores:', error);
       setStores([]);
