@@ -77,7 +77,7 @@ export const fetchWeatherByLocation = async (location: string | Coordinates): Pr
     
     const weatherData: WeatherData = {
       temperature: Math.round(data.main.temp),
-      conditions: data.weather[0].description,
+      conditions: data.weather[0].main,
       icon: data.weather[0].icon,
       sunlight,
       location: data.name,
@@ -86,7 +86,8 @@ export const fetchWeatherByLocation = async (location: string | Coordinates): Pr
       isDaytime: sunlight !== 'night'
     };
 
-    console.log('Processed weather data:', weatherData);
+    console.log('Raw weather data from API:', data);
+    console.log('Processed weather conditions:', weatherData.conditions);
     return weatherData;
   } catch (error) {
     console.error('Error in fetchWeatherByLocation:', error);

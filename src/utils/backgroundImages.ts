@@ -34,28 +34,34 @@ const backgroundSets: BackgroundSets = {
 };
 
 export function getBackgroundSetForWeather(conditions: string, isDaytime: boolean = true): string[] {
+  console.log('getBackgroundSetForWeather called with:', { conditions, isDaytime });
+  
   // If it's nighttime, always return rainy1 regardless of conditions
   if (!isDaytime) {
+    console.log('Nighttime detected, returning rainy1');
     return [rainy1];
   }
   
   // For daytime conditions
-  switch (conditions?.toLowerCase() || 'default') {
+  const normalizedConditions = conditions?.toLowerCase() || 'default';
+  console.log('Normalized conditions:', normalizedConditions);
+  
+  switch (normalizedConditions) {
     case 'clear':
     case 'sunny':
+      console.log('Sunny conditions detected, returning sunny1');
       return [sunny1];
-    case 'cloudy':
-    case 'partly cloudy':
-    case 'mostly cloudy':
+    case 'clouds':
+    case 'mist':
+    case 'fog':
+    case 'haze':
     case 'rain':
-    case 'rainy':
-    case 'showers':
-    case 'light rain':
-    case 'moderate rain':
-    case 'heavy rain':
     case 'drizzle':
+    case 'thunderstorm':
+      console.log('Cloudy/rainy conditions detected, returning cloudy1');
       return [cloudy1];
     default:
+      console.log('Default case, returning sunny1');
       return [sunny1]; // Default to sunny for daytime landing page
   }
 } 
