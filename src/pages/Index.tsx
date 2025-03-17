@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useToast } from '@/components/ui/use-toast';
 import { FilmStock, getRecommendedFilmStocks } from '@/utils/filmStocks';
 import { fetchWeatherByLocation, WeatherData } from '@/utils/weatherService';
@@ -23,6 +23,10 @@ const Index = () => {
   const [recommendedFilms, setRecommendedFilms] = useState<FilmStock[]>([]);
   const [activeFilters, setActiveFilters] = useState<FilterType[]>([]);
 
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  }, [weatherData]);
+
   const handleLocationSearch = async (location: string) => {
     setIsLoading(true);
     setError(null);
@@ -39,11 +43,6 @@ const Index = () => {
       
       setWeatherData(weather);
       updateRecommendations(weather, activeFilters);
-      
-      toast({
-        title: "Location found",
-        description: `Weather data loaded for ${weather.location}`,
-      });
     } catch (err) {
       console.error(err);
       setError("Could not find weather data for this location. Please try another city name.");
