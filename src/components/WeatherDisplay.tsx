@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { WeatherData } from '@/utils/weatherService';
 import { CloudSun, CloudRain, Sun, CloudSnow, Loader2, MapPin, Clock, ArrowLeft } from 'lucide-react';
 import { useTemperature } from '@/utils/temperatureContext';
@@ -21,6 +21,33 @@ const WeatherDisplay = ({ weather, onBack, isLoading, error }: WeatherDisplayPro
   const { getDefaultUnit, convertTemperature } = useTemperature();
   const [icon, setIcon] = useState<JSX.Element>(<CloudSun className="h-5 w-5 text-white/70" />);
   const [showAlternative, setShowAlternative] = useState(false);
+  const [isHovering, setIsHovering] = useState(false);
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  
+  // Set up the loop interval when hovering
+  useEffect(() => {
+    if (isHovering) {
+      // Start cycling between units every 1.5 seconds
+      intervalRef.current = setInterval(() => {
+        setShowAlternative(prev => !prev);
+      }, 1500);
+    } else {
+      // Clear the interval when not hovering
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
+      // Reset to default when no longer hovering
+      setShowAlternative(false);
+    }
+    
+    // Clean up interval on unmount
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
+    };
+  }, [isHovering]);
   
   useEffect(() => {
     if (weather) {
@@ -92,8 +119,8 @@ const WeatherDisplay = ({ weather, onBack, isLoading, error }: WeatherDisplayPro
         {icon}
         <div 
           className="relative text-white cursor-help min-w-[48px] text-center"
-          onMouseEnter={() => setShowAlternative(true)}
-          onMouseLeave={() => setShowAlternative(false)}
+          onMouseEnter={() => setIsHovering(true)}
+          onMouseLeave={() => setIsHovering(false)}
         >
           <AnimatePresence mode="wait">
             {!showAlternative ? (
