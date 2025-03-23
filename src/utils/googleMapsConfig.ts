@@ -23,18 +23,16 @@ export const PROXY_OPTIONS = [
   // Option 1: Direct call (might work with proper CORS setup)
   'https://maps.googleapis.com',
   
-  // Option 2: CORS Anywhere based proxy
-  'https://cors-anywhere.herokuapp.com/https://maps.googleapis.com',
-  
-  // Option 3: Another CORS proxy
+  // Option 2: Custom backend proxy (requires server deployment)
+  // Now using corsproxy.io as our primary option
   'https://corsproxy.io/?' + encodeURIComponent('https://maps.googleapis.com'),
   
-  // Option 4: Allmaps public proxy
-  'https://api.allmaps.io/proxy?url=' + encodeURIComponent('https://maps.googleapis.com')
+  // Option 3: Free public proxy (may have request limits)
+  'https://api.allorigins.win/raw?url=' + encodeURIComponent('https://maps.googleapis.com')
 ];
 
-// Default to the first option
-export const MAPS_PROXY_SERVICE = PROXY_OPTIONS[2]; // Using corsproxy.io by default
+// Default to corsproxy.io
+export const MAPS_PROXY_SERVICE = PROXY_OPTIONS[1];
 
 // Common parameters for film store searches
 export const FILM_STORE_SEARCH_OPTIONS = {

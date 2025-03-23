@@ -39,6 +39,7 @@ const Index = () => {
   const [isStoresExpanded, setIsStoresExpanded] = useState(false);
   const [stores, setStores] = useState<FilmStore[]>([]);
   const [isStoresLoading, setIsStoresLoading] = useState(false);
+  const [searchLocationName, setSearchLocationName] = useState<string>('');
 
   // Scroll to top on page load/refresh
   useEffect(() => {
@@ -92,6 +93,9 @@ const Index = () => {
         `${city.name}${city.state ? `, ${city.state}` : ''}, ${city.country}` === location
       );
 
+      // Save the search location name
+      setSearchLocationName(location);
+      
       const weather = await fetchWeatherByLocation(
         cityMatch ? { lat: cityMatch.lat, lon: cityMatch.lon } : location
       );
@@ -228,7 +232,11 @@ const Index = () => {
                           className="overflow-hidden"
                         >
                           <div className="pt-4">
-                            <FilmStoresMap stores={stores} isLoading={isStoresLoading} />
+                            <FilmStoresMap 
+                              stores={stores} 
+                              isLoading={isStoresLoading} 
+                              searchLocation={searchLocationName}
+                            />
                           </div>
                         </motion.div>
                       )}
@@ -299,7 +307,11 @@ const Index = () => {
                           className="overflow-hidden"
                         >
                           <div className="pt-4">
-                            <FilmStoresMap stores={stores} isLoading={isStoresLoading} />
+                            <FilmStoresMap 
+                              stores={stores} 
+                              isLoading={isStoresLoading} 
+                              searchLocation={searchLocationName}
+                            />
                           </div>
                         </motion.div>
                       )}
