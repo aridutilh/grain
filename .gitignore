@@ -27,3 +27,15 @@ dist-ssr
 .env
 .env.local
 .env.*.local
+
+# Build artifacts (may contain inlined API keys)
+/dist/
+/build/
+/assets/index-*.js
+/assets/*.js.map
+/assets/index-*.css
+
+# Environment-specific files that might contain API keys
+.firebase/
+.netlify/
+.vercel/
