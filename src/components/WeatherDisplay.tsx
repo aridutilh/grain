@@ -25,10 +25,10 @@ const WeatherDisplay = ({ weather, onBack, isLoading, error }: WeatherDisplayPro
   const [isAnimatingBack, setIsAnimatingBack] = useState(false);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   
-  // Set up the loop interval when hovering
+  // Handle hover state changes
   useEffect(() => {
     if (isHovering) {
-      // Immediately show alternative
+      // Immediately show alternative when hover starts
       setShowAlternative(true);
       setIsAnimatingBack(false);
       
@@ -36,20 +36,15 @@ const WeatherDisplay = ({ weather, onBack, isLoading, error }: WeatherDisplayPro
       intervalRef.current = setInterval(() => {
         setShowAlternative(prev => !prev);
       }, 1500);
-    } else {
-      // Clear the interval when not hovering
+    } else if (!isHovering && !isAnimatingBack) {
+      // When hover ends, clear the interval
       if (intervalRef.current) {
         clearInterval(intervalRef.current);
         intervalRef.current = null;
       }
       
-      // Only animate back to default if currently showing alternative
-      if (showAlternative) {
-        setIsAnimatingBack(true);
-        // We'll let the animation play out and reset showAlternative when complete
-      } else {
-        setIsAnimatingBack(false);
-      }
+      // Set animating back flag to true to trigger the smooth return animation
+      setIsAnimatingBack(true);
     }
     
     // Clean up interval on unmount
@@ -58,7 +53,7 @@ const WeatherDisplay = ({ weather, onBack, isLoading, error }: WeatherDisplayPro
         clearInterval(intervalRef.current);
       }
     };
-  }, [isHovering, showAlternative]);
+  }, [isHovering]);
   
   useEffect(() => {
     if (weather) {
@@ -79,7 +74,10 @@ const WeatherDisplay = ({ weather, onBack, isLoading, error }: WeatherDisplayPro
   // Handle animation complete for returning to default
   const handleAnimationComplete = () => {
     if (isAnimatingBack) {
-      setShowAlternative(false);
+      // Only reset to default temperature if we're not hovering and animation is complete
+      if (!isHovering) {
+        setShowAlternative(false);
+      }
       setIsAnimatingBack(false);
     }
   };
