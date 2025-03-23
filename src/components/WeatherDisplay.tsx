@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { WeatherData } from '@/utils/weatherService';
 import { CloudSun, CloudRain, Sun, CloudSnow, Loader2, MapPin, Clock, ArrowLeft } from 'lucide-react';
 import { useTemperature } from '@/utils/temperatureContext';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
   Tooltip,
   TooltipContent,
@@ -19,6 +20,7 @@ interface WeatherDisplayProps {
 const WeatherDisplay = ({ weather, onBack, isLoading, error }: WeatherDisplayProps) => {
   const { getDefaultUnit, convertTemperature } = useTemperature();
   const [icon, setIcon] = useState<JSX.Element>(<CloudSun className="h-5 w-5 text-white/70" />);
+  const [showAlternative, setShowAlternative] = useState(false);
   
   useEffect(() => {
     if (weather) {
@@ -88,18 +90,38 @@ const WeatherDisplay = ({ weather, onBack, isLoading, error }: WeatherDisplayPro
 
       <div className="flex items-center gap-3">
         {icon}
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <span className="text-white cursor-help">
+        <div 
+          className="relative text-white cursor-pointer min-w-[48px] text-center"
+          onClick={() => setShowAlternative(!showAlternative)}
+        >
+          <AnimatePresence mode="wait">
+            {!showAlternative ? (
+              <motion.div
+                key="default"
+                initial={{ opacity: 1 }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.2 }}
+                className="absolute inset-0 flex justify-center"
+              >
                 {temperature}°{defaultUnit}
-              </span>
-            </TooltipTrigger>
-            <TooltipContent className="bg-black/40 backdrop-blur-sm border-0 text-white" sideOffset={10}>
-              <p>{alternativeTemp}°{defaultUnit === 'C' ? 'F' : 'C'}</p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
+              </motion.div>
+            ) : (
+              <motion.div
+                key="alternative"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.2 }}
+                className="absolute inset-0 flex justify-center"
+              >
+                {alternativeTemp}°{defaultUnit === 'C' ? 'F' : 'C'}
+              </motion.div>
+            )}
+          </AnimatePresence>
+          <div className="opacity-0">
+            {temperature}°{defaultUnit}
+          </div>
+        </div>
       </div>
 
       <div className="flex items-center gap-2 text-white/70">
