@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
@@ -85,11 +84,11 @@ const FilmFilters = ({ onFiltersChange }: FilmFiltersProps) => {
               </div>
               <div className="flex items-center space-x-2">
                 <Checkbox 
-                  id="format-120mm" 
-                  checked={format.includes('120mm')}
-                  onCheckedChange={() => handleFormatChange('120mm')}
+                  id="format-120" 
+                  checked={format.includes('120')}
+                  onCheckedChange={() => handleFormatChange('120')}
                 />
-                <Label htmlFor="format-120mm" className="text-sm">120mm (Medium Format)</Label>
+                <Label htmlFor="format-120" className="text-sm">120 (Medium Format)</Label>
               </div>
               <div className="flex items-center space-x-2">
                 <Checkbox 

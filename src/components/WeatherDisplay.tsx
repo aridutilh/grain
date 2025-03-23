@@ -95,7 +95,7 @@ const WeatherDisplay = ({ weather, onBack, isLoading, error }: WeatherDisplayPro
                 {temperature}°{defaultUnit}
               </span>
             </TooltipTrigger>
-            <TooltipContent>
+            <TooltipContent className="bg-black/40 backdrop-blur-sm border-0 text-white" sideOffset={10}>
               <p>{alternativeTemp}°{defaultUnit === 'C' ? 'F' : 'C'}</p>
             </TooltipContent>
           </Tooltip>
