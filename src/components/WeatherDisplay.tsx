@@ -91,16 +91,20 @@ const WeatherDisplay = ({ weather, onBack, isLoading, error }: WeatherDisplayPro
       <div className="flex items-center gap-3">
         {icon}
         <div 
-          className="relative text-white cursor-pointer min-w-[48px] text-center"
-          onClick={() => setShowAlternative(!showAlternative)}
+          className="relative text-white cursor-help min-w-[48px] text-center"
+          onMouseEnter={() => setShowAlternative(true)}
+          onMouseLeave={() => setShowAlternative(false)}
         >
           <AnimatePresence mode="wait">
             {!showAlternative ? (
               <motion.div
                 key="default"
                 initial={{ opacity: 1 }}
-                exit={{ opacity: 0, y: -10 }}
-                transition={{ duration: 0.2 }}
+                exit={{ opacity: 0, scale: 0.9, y: -5 }}
+                transition={{ 
+                  duration: 0.3, 
+                  ease: "easeInOut" 
+                }}
                 className="absolute inset-0 flex justify-center"
               >
                 {temperature}°{defaultUnit}
@@ -108,10 +112,13 @@ const WeatherDisplay = ({ weather, onBack, isLoading, error }: WeatherDisplayPro
             ) : (
               <motion.div
                 key="alternative"
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-                transition={{ duration: 0.2 }}
+                initial={{ opacity: 0, scale: 1.1, y: 5 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.9, y: -5 }}
+                transition={{ 
+                  duration: 0.3, 
+                  ease: "easeInOut" 
+                }}
                 className="absolute inset-0 flex justify-center"
               >
                 {alternativeTemp}°{defaultUnit === 'C' ? 'F' : 'C'}
