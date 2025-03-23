@@ -113,6 +113,33 @@ const WeatherDisplay = ({ weather, onBack, isLoading, error }: WeatherDisplayPro
     hour12: true
   });
 
+  // Shared animation variants for smoother transitions
+  const animationVariants = {
+    initial: {
+      opacity: 0,
+      scale: 1.1,
+      y: 5
+    },
+    animate: {
+      opacity: 1,
+      scale: 1,
+      y: 0
+    },
+    exit: {
+      opacity: 0,
+      scale: 0.9,
+      y: -5
+    }
+  };
+
+  // Smoother spring physics for transitions
+  const transitionProps = {
+    type: "spring",
+    stiffness: 150,
+    damping: 15,
+    mass: 0.5
+  };
+
   return (
     <div className="flex items-center gap-4 bg-black/40 backdrop-blur-sm px-4 py-2 rounded-lg">
       <div className="flex items-center gap-2">
@@ -144,11 +171,8 @@ const WeatherDisplay = ({ weather, onBack, isLoading, error }: WeatherDisplayPro
               <motion.div
                 key="default"
                 initial={{ opacity: 1 }}
-                exit={{ opacity: 0, scale: 0.9, y: -5 }}
-                transition={{ 
-                  duration: 0.3, 
-                  ease: "easeInOut" 
-                }}
+                exit={animationVariants.exit}
+                transition={transitionProps}
                 className="absolute inset-0 flex justify-center"
               >
                 {temperature}°{defaultUnit}
@@ -156,13 +180,10 @@ const WeatherDisplay = ({ weather, onBack, isLoading, error }: WeatherDisplayPro
             ) : (
               <motion.div
                 key="alternative"
-                initial={{ opacity: 0, scale: 1.1, y: 5 }}
-                animate={{ opacity: 1, scale: 1, y: 0 }}
-                exit={{ opacity: 0, scale: 0.9, y: -5 }}
-                transition={{ 
-                  duration: 0.3, 
-                  ease: "easeInOut" 
-                }}
+                initial={animationVariants.initial}
+                animate={animationVariants.animate}
+                exit={animationVariants.exit}
+                transition={transitionProps}
                 onAnimationComplete={handleAnimationComplete}
                 className="absolute inset-0 flex justify-center"
               >
