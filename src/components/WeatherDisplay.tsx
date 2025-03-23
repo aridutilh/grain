@@ -27,7 +27,10 @@ const WeatherDisplay = ({ weather, onBack, isLoading, error }: WeatherDisplayPro
   // Set up the loop interval when hovering
   useEffect(() => {
     if (isHovering) {
-      // Start cycling between units every 1.5 seconds
+      // Immediately show alternative
+      setShowAlternative(true);
+      
+      // Start cycling between units every 1.5 seconds after initial switch
       intervalRef.current = setInterval(() => {
         setShowAlternative(prev => !prev);
       }, 1500);
