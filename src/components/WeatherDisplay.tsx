@@ -22,6 +22,7 @@ const WeatherDisplay = ({ weather, onBack, isLoading, error }: WeatherDisplayPro
   const [icon, setIcon] = useState<JSX.Element>(<CloudSun className="h-5 w-5 text-white/70" />);
   const [showAlternative, setShowAlternative] = useState(false);
   const [isHovering, setIsHovering] = useState(false);
+  const [isAnimatingBack, setIsAnimatingBack] = useState(false);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   
   // Set up the loop interval when hovering
@@ -29,6 +30,7 @@ const WeatherDisplay = ({ weather, onBack, isLoading, error }: WeatherDisplayPro
     if (isHovering) {
       // Immediately show alternative
       setShowAlternative(true);
+      setIsAnimatingBack(false);
       
       // Start cycling between units every 1.5 seconds after initial switch
       intervalRef.current = setInterval(() => {
@@ -40,8 +42,14 @@ const WeatherDisplay = ({ weather, onBack, isLoading, error }: WeatherDisplayPro
         clearInterval(intervalRef.current);
         intervalRef.current = null;
       }
-      // Reset to default when no longer hovering
-      setShowAlternative(false);
+      
+      // Only animate back to default if currently showing alternative
+      if (showAlternative) {
+        setIsAnimatingBack(true);
+        // We'll let the animation play out and reset showAlternative when complete
+      } else {
+        setIsAnimatingBack(false);
+      }
     }
     
     // Clean up interval on unmount
@@ -50,7 +58,7 @@ const WeatherDisplay = ({ weather, onBack, isLoading, error }: WeatherDisplayPro
         clearInterval(intervalRef.current);
       }
     };
-  }, [isHovering]);
+  }, [isHovering, showAlternative]);
   
   useEffect(() => {
     if (weather) {
@@ -67,6 +75,14 @@ const WeatherDisplay = ({ weather, onBack, isLoading, error }: WeatherDisplayPro
       }
     }
   }, [weather]);
+  
+  // Handle animation complete for returning to default
+  const handleAnimationComplete = () => {
+    if (isAnimatingBack) {
+      setShowAlternative(false);
+      setIsAnimatingBack(false);
+    }
+  };
   
   if (isLoading) {
     return (
@@ -149,6 +165,7 @@ const WeatherDisplay = ({ weather, onBack, isLoading, error }: WeatherDisplayPro
                   duration: 0.3, 
                   ease: "easeInOut" 
                 }}
+                onAnimationComplete={handleAnimationComplete}
                 className="absolute inset-0 flex justify-center"
               >
                 {alternativeTemp}°{defaultUnit === 'C' ? 'F' : 'C'}
